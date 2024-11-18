@@ -35,6 +35,8 @@ dependencies {
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0' // 최신 버전으로 업데이트 가능
+	implementation 'software.amazon.awssdk:dynamodb:2.20.95' // 최신 버전
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa' // 선택: Spring Data 사용 시
 }
 
 tasks.named('test') {
