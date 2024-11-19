@@ -1,14 +1,13 @@
 package com.LGDXSCHOOL._dx.controller;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.ListTablesResponse;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/dynamodb")
 public class DynamoDBController {
 
     private final DynamoDbClient dynamoDbClient;
@@ -17,8 +16,9 @@ public class DynamoDBController {
         this.dynamoDbClient = dynamoDbClient;
     }
 
-    @GetMapping("/tables")
+    @GetMapping("/dynamodb/tables")
     public List<String> listTables() {
-        return dynamoDbClient.listTables().tableNames();
+        ListTablesResponse response = dynamoDbClient.listTables();
+        return response.tableNames();
     }
 }

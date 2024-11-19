@@ -10,9 +10,14 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf().disable() // CSRF 비활성화
-                .authorizeRequests()
-                .anyRequest().permitAll(); // 모든 요청 허용
+        http
+                .csrf().disable() // CSRF 비활성화
+                .authorizeHttpRequests()
+                .requestMatchers("/**").permitAll() // 모든 요청 허용
+                .anyRequest().permitAll() // 인증 없이 허용
+                .and()
+                .formLogin().disable(); // 기본 로그인 페이지 비활성화
+
         return http.build();
     }
 }
