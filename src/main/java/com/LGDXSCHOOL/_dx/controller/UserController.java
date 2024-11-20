@@ -1,9 +1,13 @@
 package com.LGDXSCHOOL._dx.controller;
 
 
+import com.LGDXSCHOOL._dx.dto.LoginDTO;
+import com.LGDXSCHOOL._dx.dto.LoginResponseDTO;
 import com.LGDXSCHOOL._dx.dto.UserDTO;
 import com.LGDXSCHOOL._dx.entity.User;
 import com.LGDXSCHOOL._dx.service.UserService;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,19 +31,14 @@ public class UserController {
     }
 
 
-//    @GetMapping
-//    public ResponseEntity<List<UserDTO>> getAllUsers() {
-//        return ResponseEntity.ok(userService.getAllUsers());
-//    }
-//
-//    @GetMapping("/{id}")
-//    public ResponseEntity<UserDTO> getUserById(@PathVariable String id) {
-//        return ResponseEntity.ok(userService.findByUserId(id));
-//    }
-//
-//    @DeleteMapping("/{id}")
-//    public ResponseEntity<Void> deleteUser(@PathVariable String id) {
-//        userService.deleteUser(id);
-//        return ResponseEntity.noContent().build();
-//    }
+    // 로그인
+    @PostMapping("/login")
+    public ResponseEntity<?> loginUser(@RequestBody LoginDTO loginDTO) {
+        try {
+            String token = userService.login(loginDTO.getUserId(), loginDTO.getUserPw());
+            return ResponseEntity.ok(new LoginResponseDTO(token)); // LoginResponseDTO 반환
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
 }
