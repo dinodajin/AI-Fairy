@@ -24,26 +24,42 @@ repositories {
 }
 
 dependencies {
+	// Spring Boot 기본 의존성
 	implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+	// Lombok
 	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
+
+	// 테스트 관련 의존성
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0' // 최신 버전으로 업데이트 가능
-//	implementation 'software.amazon.awssdk:dynamodb:2.20.95' // 최신 버전
-	implementation 'software.amazon.awssdk:dynamodb-enhanced:2.20.95'
-
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'com.oracle.database.jdbc:ojdbc8:19.8.0.0'
-
+	// JWT 처리
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5' // JSON 직렬화/역직렬화
+
+	// SpringDoc - OpenAPI
+	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0' // 최신 버전으로 업데이트 가능
+
+	// AWS DynamoDB
+	implementation 'software.amazon.awssdk:dynamodb-enhanced:2.20.95'
+	//	implementation 'software.amazon.awssdk:dynamodb:2.20.95' // 최신 버전
+
+	// Oracle JDBC
+	implementation 'com.oracle.database.jdbc:ojdbc8:19.8.0.0'
+
+	// H2 Database (테스트용)
+	implementation 'com.h2database:h2'
+
+	// WebClient (AI API 요청용)
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 }
 
 tasks.named('test') {

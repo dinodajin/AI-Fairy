@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Chat</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.2/sockjs.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+</head>
+<body>
+<h1>WebSocket Chat</h1>
+<div>
+    <h3>Send a Message</h3>
+    <textarea id="messageInput" placeholder="Type your message here"></textarea>
+    <button onclick="sendMessage()">Send</button>
+</div>
+<div>
+    <h3>Received Messages</h3>
+    <ul id="messages"></ul>
+</div>
+<script>
+    let stompClient = null;
+
+    function connect() {
+        // WebSocket endpoint (Spring 서버의 "/ws")
+        const socket = new SockJS('http://localhost:8081/ws');
+        stompClient = Stomp.over(socket);
+
+        // STOMP 연결
+        stompClient.connect({}, function (frame) {
+            console.log('Connected: ' + frame);
+
+            // /topic/messages를 구독
+            stompClient.subscribe('/topic/messages', function (message) {
+                const receivedMessage = JSON.parse(message.body);
+                showMessage(receivedMessage.content);
+            });
+        });
+    }
+
+    function sendMessage() {
+        const messageInput = document.getElementById('messageInput').value;
+
+        // /app/chat로 메시지 전송
+        stompClient.send('/app/chat', {}, JSON.stringify({ content: messageInput }));
+    }
+
+    function showMessage(message) {
+        const messagesList = document.getElementById('messages');
+        const messageItem = document.createElement('li');
+        messageItem.appendChild(document.createTextNode(message));
+        messagesList.appendChild(messageItem);
+    }
+
+    // 페이지 로드 시 WebSocket 연결
+    window.onload = connect;
+</script>
+</body>
+</html>

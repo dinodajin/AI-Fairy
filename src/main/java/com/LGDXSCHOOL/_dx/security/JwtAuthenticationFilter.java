@@ -44,4 +44,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
         return null;
     }
+
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return path.startsWith("/ws"); // WebSocket 요청은 필터링하지 않음
+    }
+
 }
