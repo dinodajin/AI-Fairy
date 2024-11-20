@@ -2,10 +2,15 @@ package com.LGDXSCHOOL._dx.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-@Data
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "USER_TB")  // 테이블 이름과 매핑
+@Getter @Setter
 public class User {
 
     @Id
@@ -28,8 +33,8 @@ public class User {
     private String phoneNumber;
 
     @Column(name = "CREATED_AT", nullable = false)
-    private String createdAt;
+    private LocalDateTime createdAt;
 
     @Column(name = "UPDATED_AT")
-    private String updatedAt;
+    private LocalDateTime updatedAt;
 }

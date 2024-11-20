@@ -1,11 +1,16 @@
 package com.LGDXSCHOOL._dx.service;
 
+import com.LGDXSCHOOL._dx.dto.UserDTO;
 import com.LGDXSCHOOL._dx.entity.User;
 import com.LGDXSCHOOL._dx.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
+@Slf4j
 @Service
 public class UserService {
 
@@ -15,19 +20,15 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User saveUser(User user) {
-        return userRepository.save(user);
-    }
+    public UserDTO saveUser(UserDTO userDTO) {
+        User user = new User();
+        BeanUtils.copyProperties(userDTO, user); // DTO -> Entity 자동 변환
 
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
+        log.info("user => {}" , user);
+        log.info("userDTO => {}" , userDTO);
+        User savedUser = userRepository.save(user); // 저장
 
-    public User getUserById(String userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
-    }
-
-    public void deleteUser(String userId) {
-        userRepository.deleteById(userId);
+        BeanUtils.copyProperties(savedUser, userDTO); // Entity -> DTO 자동 변환
+        return userDTO;
     }
 }

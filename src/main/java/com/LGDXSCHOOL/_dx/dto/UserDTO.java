@@ -1,104 +1,105 @@
 package com.LGDXSCHOOL._dx.dto;
-import jakarta.validation.constraints.*;
-import java.time.LocalDateTime;
 
-import jakarta.validation.constraints.*;
-import java.time.LocalDateTime;
-
-import jakarta.validation.constraints.*;
-import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
+import lombok.ToString;
+
+import java.time.LocalDateTime;
 
 public class UserDTO {
     @NotNull
-    private String USER_ID;
+    @JsonProperty("USER_ID")
+    private String userId;
 
     @NotNull
-    private String USER_PW;
+    @JsonProperty("USER_PW")
+    private String userPw;
 
     @NotNull
-    private String NAME;
+    @JsonProperty("NAME")
+    private String name;
 
     @NotNull
-    private Integer AGE;
+    @JsonProperty("AGE")
+    private Integer age;
 
     @NotNull
-    private String GENDER;
+    @JsonProperty("GENDER")
+    private String gender;
 
     @NotNull
-    private String PHONE_NUMBER;
+    @JsonProperty("PHONE_NUMBER")
+    private String phoneNumber;
 
     @NotNull
-    private String CREATED_AT;
+    @JsonProperty("CREATED_AT")
+    private LocalDateTime createdAt;
 
-    private String UPDATED_AT;
-
+    private LocalDateTime updatedAt;
 
     // Getters and Setters
-    public String getUSER_ID() {
-        return USER_ID;
+    public String getUserId() {
+        return userId;
     }
 
-    public void setUSER_ID(String USER_ID) {
-        this.USER_ID = USER_ID;
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
-    public String getUSER_PW() {
-        return USER_PW;
+    public String getUserPw() {
+        return userPw;
     }
 
-    public void setUSER_PW(String USER_PW) {
-        this.USER_PW = USER_PW;
+    public void setUserPw(String userPw) {
+        this.userPw = userPw;
     }
 
-    public String getNAME() {
-        return NAME;
+    public String getName() {
+        return name;
     }
 
-    public void setNAME(String NAME) {
-        this.NAME = NAME;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public Integer getAGE() {
-        return AGE;
+    public Integer getAge() {
+        return age;
     }
 
-    public void setAGE(Integer AGE) {
-        this.AGE = AGE;
+    public void setAge(Integer age) {
+        this.age = age;
     }
 
-    public String getGENDER() {
-        return GENDER;
+    public String getGender() {
+        return gender;
     }
 
-    public void setGENDER(String GENDER) {
-        this.GENDER = GENDER;
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
-    public String getPHONE_NUMBER() {
-        return PHONE_NUMBER;
+    public String getPhoneNumber() {
+        return phoneNumber;
     }
 
-    public void setPHONE_NUMBER(String PHONE_NUMBER) {
-        this.PHONE_NUMBER = PHONE_NUMBER;
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 
-    public String getCREATED_AT() {
-        return CREATED_AT;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setCREATED_AT(String CREATED_AT) {
-        this.CREATED_AT = CREATED_AT;
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public String getUPDATED_AT() {
-        return UPDATED_AT;
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
     }
 
-    public void setUPDATED_AT(String UPDATED_AT) {
-        this.UPDATED_AT = UPDATED_AT;
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
-
-
-
