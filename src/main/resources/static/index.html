@@ -69,7 +69,7 @@
             messageElement.textContent = `[AI]: ${messageData.content}`;
         } else {
             messageElement.style.color = 'green';
-            messageElement.textContent = `[You]: ${messageData.content}`;
+            messageElement.textContent = `[ME]: ${messageData.content}`;
         }
 
         document.querySelector('#messages').appendChild(messageElement);

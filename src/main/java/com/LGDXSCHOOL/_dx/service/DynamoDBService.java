@@ -49,5 +49,18 @@ public class DynamoDBService {
         table.putItem(message);
     }
 
+    public int getTodaysMessageCount(String userId, String rfidId, String sender, String today) {
+        DynamoDbTable<ChatMessage> table = dynamoDbEnhancedClient.table("CHAT_TB", TableSchema.fromBean(ChatMessage.class));
+
+        // 오늘 날짜를 기준으로 메시지 수 쿼리
+        int count = (int) table.scan().items().stream()
+                .filter(message -> message.getUserId().equals(userId) &&
+                        message.getRfidId().equals(rfidId) &&
+                        message.getSender().equals(sender) &&
+                        message.getCreatedAt().startsWith(today)) // 날짜 기준 필터
+                .count();
+
+        return count;
+    }
 }
 

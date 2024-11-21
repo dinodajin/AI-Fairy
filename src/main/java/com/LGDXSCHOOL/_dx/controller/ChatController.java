@@ -36,9 +36,11 @@ public class ChatController {
 
         // 기본 필드 설정
         message.setCreatedAt(LocalDateTime.now().toString());
-        message.setSender("ME");
+        message.setSender("USER");
+        message.setUserId("user3@example.com");
+        message.setRfidId("RFID004"); // # 수정 필요
         message.setType("text");
-        message.setReadStatus("N");
+        message.setReadStatus("Y");
 
         // DynamoDB에 저장
         dynamoDBService.saveMessage(message);
@@ -49,9 +51,11 @@ public class ChatController {
         aiMessage.setChatNo((int) (System.currentTimeMillis() / 1000L) + 1);
         aiMessage.setContent(aiResponse);
         aiMessage.setSender("AI");
+        aiMessage.setUserId("user3@example.com");
+        aiMessage.setRfidId("RFID004"); // # 수정 필요
         aiMessage.setType("text");
         aiMessage.setCreatedAt(LocalDateTime.now().toString());
-        aiMessage.setReadStatus("N");
+        aiMessage.setReadStatus("Y");
 
         // AI 응답 저장
         dynamoDBService.saveMessage(aiMessage);
