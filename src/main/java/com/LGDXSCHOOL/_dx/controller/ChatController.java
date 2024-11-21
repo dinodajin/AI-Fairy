@@ -1,6 +1,7 @@
 package com.LGDXSCHOOL._dx.controller;
 
 import com.LGDXSCHOOL._dx.dto.ChatMessage;
+import com.LGDXSCHOOL._dx.service.AIService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -9,14 +10,36 @@ import org.springframework.stereotype.Controller;
 
 @Controller
 public class ChatController {
+    private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
 
-    @MessageMapping("/chat") // 클라이언트에서 /app/chat으로 메시지 전송
-    @SendTo("/topic/messages") // 클라이언트에게 /topic/messages로 브로드캐스트
+    private final AIService aiService;
+
+    public ChatController(AIService aiService) {
+        this.aiService = aiService; // AIService 주입
+    }
+
+    @MessageMapping("/chat")
+    @SendTo("/topic/messages")
     public ChatMessage handleMessage(ChatMessage message) {
-        System.out.println("Received message: " + message.getContent());
-        ChatMessage response = new ChatMessage();
-        response.setContent("서버 응답: " + message.getContent());
-        return response; // JSON 형태로 반환
+        logger.info("Received message: {}", message);
+
+        // 사용자가 보낸 메시지
+        ChatMessage userMessage = new ChatMessage();
+        userMessage.setSender("You");
+        userMessage.setContent(message.getContent());
+        userMessage.setType("text");
+
+        logger.info("User message: {}", userMessage);
+
+        // AI 응답 생성
+        String aiResponse = aiService.getAIResponse(message.getContent());
+        ChatMessage aiMessage = new ChatMessage();
+        aiMessage.setSender("AI");
+        aiMessage.setContent(aiResponse);
+        aiMessage.setType("text");
+
+        logger.info("AI message: {}", aiMessage);
+
+        return aiMessage;
     }
 }
-

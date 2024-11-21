@@ -21,36 +21,60 @@
 <script>
     let stompClient = null;
 
+    // WebSocket 연결 설정
     function connect() {
-        // WebSocket endpoint (Spring 서버의 "/ws")
-        const socket = new SockJS('http://localhost:8081/ws');
-        stompClient = Stomp.over(socket);
+        const socket = new SockJS('/ws'); // SockJS를 통해 WebSocket 연결
+        stompClient = Stomp.over(socket); // STOMP 프로토콜 사용
 
-        // STOMP 연결
         stompClient.connect({}, function (frame) {
             console.log('Connected: ' + frame);
 
-            // /topic/messages를 구독
+            // 메시지 수신 구독 설정
             stompClient.subscribe('/topic/messages', function (message) {
-                const receivedMessage = JSON.parse(message.body);
-                showMessage(receivedMessage.content);
+                messageReceived(message); // 메시지 수신 처리
             });
         });
     }
 
+    // 메시지 전송
     function sendMessage() {
-        const messageInput = document.getElementById('messageInput').value;
+        const inputElement = document.getElementById('messageInput');
+        const messageContent = inputElement.value;
 
-        // /app/chat로 메시지 전송
-        stompClient.send('/app/chat', {}, JSON.stringify({ content: messageInput }));
+        if (messageContent.trim() === '') return; // 빈 메시지는 전송하지 않음
+
+        // 사용자가 보낸 메시지를 화면에 추가
+        const userMessageElement = document.createElement('li');
+        userMessageElement.style.color = 'green'; // 사용자 메시지 : 초록색
+        userMessageElement.textContent = `[You]: ${messageContent}`;
+        document.querySelector('#messages').appendChild(userMessageElement);
+
+        // 서버로 메시지 전송
+        stompClient.send('/app/chat', {}, JSON.stringify({ content: messageContent }));
+
+        // 입력 필드 비우기
+        inputElement.value = '';
     }
 
-    function showMessage(message) {
-        const messagesList = document.getElementById('messages');
-        const messageItem = document.createElement('li');
-        messageItem.appendChild(document.createTextNode(message));
-        messagesList.appendChild(messageItem);
+
+    // 메시지 화면에 추가
+    function messageReceived(message) {
+        const messageData = JSON.parse(message.body); // 서버에서 받은 메시지 파싱
+
+        const messageElement = document.createElement('li');
+
+        // 발신자 스타일 변경
+        if (messageData.sender === 'AI') {
+            messageElement.style.color = 'blue'; // AI 메시지 : 파란색
+            messageElement.textContent = `[AI]: ${messageData.content}`;
+        } else {
+            messageElement.style.color = 'green';
+            messageElement.textContent = `[You]: ${messageData.content}`;
+        }
+
+        document.querySelector('#messages').appendChild(messageElement);
     }
+
 
     // 페이지 로드 시 WebSocket 연결
     window.onload = connect;
