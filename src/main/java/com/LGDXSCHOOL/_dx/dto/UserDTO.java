@@ -2,7 +2,6 @@ package com.LGDXSCHOOL._dx.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotNull;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -26,10 +25,6 @@ public class UserDTO {
     @NotNull
     @JsonProperty("GENDER")
     private String gender;
-
-    @NotNull
-    @JsonProperty("PHONE_NUMBER")
-    private String phoneNumber;
 
     @NotNull
     @JsonProperty("CREATED_AT")
@@ -78,18 +73,9 @@ public class UserDTO {
         this.gender = gender;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
-
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;

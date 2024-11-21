@@ -1,10 +1,8 @@
 package com.LGDXSCHOOL._dx.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
 
 import java.time.LocalDateTime;
 
@@ -28,9 +26,6 @@ public class User {
 
     @Column(name = "GENDER", nullable = false)
     private String gender;
-
-    @Column(name = "PHONE_NUMBER", nullable = false)
-    private String phoneNumber;
 
     @Column(name = "CREATED_AT", nullable = false)
     private LocalDateTime createdAt;
