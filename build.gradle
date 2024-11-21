@@ -24,11 +24,23 @@ repositories {
 }
 
 dependencies {
-	// Spring Boot 기본 의존성
-	implementation 'org.springframework.boot:spring-boot-starter-security'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+	// Saring Boot for Oracle JPA
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'com.oracle.database.jdbc:ojdbc8:19.8.0.0'
+
+	// AWS SDK for DynamoDB
+	implementation platform("software.amazon.awssdk:bom:2.20.95")
+	implementation 'software.amazon.awssdk:dynamodb-enhanced:2.20.95'
+	implementation 'software.amazon.awssdk:dynamodb'
+
+	// Spring Boot Starter Web for Controllers
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+
+	// Spring Security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	// Spring Boot 기본 의존성
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 
 	// Lombok
 	compileOnly 'org.projectlombok:lombok'
@@ -38,7 +50,8 @@ dependencies {
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+
 
 	// JWT 처리
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
@@ -47,13 +60,6 @@ dependencies {
 
 	// SpringDoc - OpenAPI
 	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0' // 최신 버전으로 업데이트 가능
-
-	// AWS DynamoDB
-	implementation 'software.amazon.awssdk:dynamodb-enhanced:2.20.95'
-	//	implementation 'software.amazon.awssdk:dynamodb:2.20.95' // 최신 버전
-
-	// Oracle JDBC
-	implementation 'com.oracle.database.jdbc:ojdbc8:19.8.0.0'
 
 	// H2 Database (테스트용)
 	implementation 'com.h2database:h2'
