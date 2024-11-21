@@ -7,6 +7,10 @@ public class AIService {
 
     public String getAIResponse(String userMessage) {
         // #수정: 예제 응답임 -> OpenAI API 같은 것을 호출할 예정
+        if (userMessage == null || userMessage.trim().isEmpty()) {
+            return "죄송해요, 입력된 메시지가 없어요. 다시 입력해주세요.";
+        }
+
         if (userMessage.contains("안녕")) {
             return "안녕하세요! 저는 AI입니다. 무엇을 도와드릴까요?";
         } else if (userMessage.contains("이름")) {

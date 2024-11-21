@@ -39,9 +39,15 @@ public class DynamoDBService {
     }
 
     public void saveMessage(ChatMessage message) {
-        // 데이터 저장
+        if (message.getChatNo() == 0) {
+            message.setChatNo((int) (System.currentTimeMillis() / 1000L)); // 기본값 생성
+        }
+
+//        logger.debug("Saving message with CHAT_NO: {}", message.getChatNo());
+
         DynamoDbTable<ChatMessage> table = dynamoDbEnhancedClient.table("CHAT_TB", TableSchema.fromBean(ChatMessage.class));
         table.putItem(message);
     }
+
 }
 
