@@ -1,6 +1,5 @@
 package com.LGDXSCHOOL._dx.service;
 
-import com.LGDXSCHOOL._dx.dto.CharacterDTO;
 import com.LGDXSCHOOL._dx.entity.Character;
 import com.LGDXSCHOOL._dx.repository.CharacterRepository;
 import org.springframework.stereotype.Service;
@@ -13,11 +12,11 @@ import java.time.format.DateTimeFormatter;
 public class SnackService {
 
     private final CharacterRepository characterRepository;
-    private final DynamoDBService dynamoDBService;
+    private final ChatMessageService chatMessageService;
 
-    public SnackService(CharacterRepository characterRepository, DynamoDBService dynamoDBService) {
+    public SnackService(CharacterRepository characterRepository, ChatMessageService chatMessageService) {
         this.characterRepository = characterRepository;
-        this.dynamoDBService = dynamoDBService;
+        this.chatMessageService = chatMessageService;
     }
 
     @Transactional
@@ -26,8 +25,8 @@ public class SnackService {
         String today = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
 
         // DynamoDB에서 USER_ID, SENDER("USER", "AI") 기준으로 오늘의 채팅 횟수 가져오기
-        int userToAiCount = dynamoDBService.getTodaysMessageCount(userId, rfidId, "USER", today);
-        int aiToUserCount = dynamoDBService.getTodaysMessageCount(userId, rfidId, "AI", today);
+        int userToAiCount = chatMessageService.getTodaysMessageCount(userId, rfidId, "USER", today);
+        int aiToUserCount = chatMessageService.getTodaysMessageCount(userId, rfidId, "AI", today);
 
         // 사용자와 AI 간의 총 채팅 횟수 계산
         int totalChatsToday = (userToAiCount + aiToUserCount) / 2;

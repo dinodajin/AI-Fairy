@@ -13,15 +13,13 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
-public class DynamoDBService {
-
-
+public class ChatMessageService {
     private static final AtomicInteger CHAT_NO_GENERATOR = new AtomicInteger(1); // Auto-increment simulation
 
     private final DynamoDbEnhancedClient dynamoDbEnhancedClient;
     private final DynamoDbClient dynamoDbClient;
 
-    public DynamoDBService(DynamoDbEnhancedClient dynamoDbEnhancedClient, DynamoDbClient dynamoDbClient) {
+    public ChatMessageService(DynamoDbEnhancedClient dynamoDbEnhancedClient, DynamoDbClient dynamoDbClient) {
         this.dynamoDbEnhancedClient = dynamoDbEnhancedClient;
         this.dynamoDbClient = dynamoDbClient;
     }

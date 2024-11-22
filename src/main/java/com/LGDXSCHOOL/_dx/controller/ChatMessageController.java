@@ -2,7 +2,7 @@ package com.LGDXSCHOOL._dx.controller;
 
 import com.LGDXSCHOOL._dx.dto.ChatMessage;
 import com.LGDXSCHOOL._dx.service.AIService;
-import com.LGDXSCHOOL._dx.service.DynamoDBService;
+import com.LGDXSCHOOL._dx.service.ChatMessageService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -10,20 +10,19 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Controller
-public class ChatController {
-    private static final Logger logger = LoggerFactory.getLogger(ChatController.class);
+public class ChatMessageController {
+    private static final Logger logger = LoggerFactory.getLogger(ChatMessageController.class);
 
     private final AIService aiService;
-    private final DynamoDBService dynamoDBService;
+    private final ChatMessageService chatMessageService;
     private static final AtomicInteger chatNoGenerator = new AtomicInteger(1); // 고유 번호 생성기
 
-    public ChatController(AIService aiService, DynamoDBService dynamoDBService) {
+    public ChatMessageController(AIService aiService, ChatMessageService chatMessageService) {
         this.aiService = aiService;
-        this.dynamoDBService = dynamoDBService;
+        this.chatMessageService = chatMessageService;
     }
 
     @MessageMapping("/chat")
@@ -43,7 +42,7 @@ public class ChatController {
         message.setReadStatus("Y");
 
         // DynamoDB에 저장
-        dynamoDBService.saveMessage(message);
+        chatMessageService.saveMessage(message);
 
         // AI 응답 생성
         String aiResponse = aiService.getAIResponse(message.getContent());
@@ -58,7 +57,7 @@ public class ChatController {
         aiMessage.setReadStatus("Y");
 
         // AI 응답 저장
-        dynamoDBService.saveMessage(aiMessage);
+        chatMessageService.saveMessage(aiMessage);
 
         return aiMessage;
     }
