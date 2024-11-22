@@ -73,6 +73,24 @@ public class DynamoDBService {
                         "N".equals(message.getReadStatus()));
     }
 
+    // 모든 읽지 않은 메시지 처리
+    public String markAllUnreadMessagesAsRead(String userId, String rfidId) {
+        DynamoDbTable<ChatMessage> table = dynamoDbEnhancedClient.table("CHAT_TB", TableSchema.fromBean(ChatMessage.class));
 
+        long updatedCount = table.scan().items().stream()
+                .filter(message -> message.getUserId().equals(userId) &&
+                        message.getRfidId().equals(rfidId) &&
+                        "N".equals(message.getReadStatus())) // 읽지 않은 메시지 필터링
+                .peek(message -> {
+                    message.setReadStatus("Y");
+                    table.putItem(message); // DynamoDB 업데이트
+                })
+                .count(); // 처리된 메시지 개수 계산
+
+        if (updatedCount > 0) {
+            return "Successfully updated " + updatedCount + " unread message(s) to read status for userId: " + userId + ", rfidId: " + rfidId;
+        } else {
+            return "No unread messages found for userId: " + userId + ", rfidId: " + rfidId;
+        }
+    }
 }
-
