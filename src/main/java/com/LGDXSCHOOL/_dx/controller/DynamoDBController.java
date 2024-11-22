@@ -4,6 +4,7 @@ import com.LGDXSCHOOL._dx.dto.ChatMessage;
 import com.LGDXSCHOOL._dx.service.DynamoDBService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -29,5 +30,11 @@ public class DynamoDBController {
     @GetMapping("/messages")
     public List<ChatMessage> getAllMessages() {
         return dynamoDBService.getAllMessages();
+    }
+
+    // DynamoDB 안 읽은 메시지 존재 여부 확인
+    @GetMapping("/messages/unread")
+    public boolean hasUnreadMessages(@RequestParam String userId, @RequestParam String rfidId) {
+        return dynamoDBService.hasUnreadMessage(userId, rfidId);
     }
 }

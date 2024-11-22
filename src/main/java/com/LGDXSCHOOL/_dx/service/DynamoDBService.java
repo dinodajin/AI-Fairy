@@ -62,5 +62,17 @@ public class DynamoDBService {
 
         return count;
     }
+
+    // 읽지 않은 메시지가 존재여부 확인
+    public boolean hasUnreadMessage(String userId, String rfidId) {
+        DynamoDbTable<ChatMessage> table = dynamoDbEnhancedClient.table("CHAT_TB", TableSchema.fromBean(ChatMessage.class));
+
+        return table.scan().items().stream()
+                .anyMatch(message -> message.getUserId().equals(userId) &&
+                        message.getRfidId().equals(rfidId) &&
+                        "N".equals(message.getReadStatus()));
+    }
+
+
 }
 
