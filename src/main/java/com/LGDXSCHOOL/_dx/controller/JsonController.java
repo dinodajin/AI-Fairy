@@ -1,6 +1,9 @@
 package com.LGDXSCHOOL._dx.controller;
 
+import com.LGDXSCHOOL._dx.dto.ChatMessage;
+import com.LGDXSCHOOL._dx.service.ChatMessageService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
@@ -8,24 +11,50 @@ import java.util.Map;
 @RequestMapping("/api/json")
 public class JsonController {
 
+    private final ChatMessageService chatMessageService;
+    private final SimpMessagingTemplate messagingTemplate;
+
+    public JsonController(ChatMessageService chatMessageService, SimpMessagingTemplate messagingTemplate) {
+        this.chatMessageService = chatMessageService;
+        this.messagingTemplate = messagingTemplate;
+    }
+
     @PostMapping("/upload")
     public ResponseEntity<String> uploadJson(@RequestBody Map<String, Object> data) {
         try {
-            // output1 내용 읽기
+            // 사용자 메시지 (output1)
             Map<String, Object> output1 = (Map<String, Object>) data.get("output1");
-            System.out.println("Output1: " + output1);
+            ChatMessage userMessage = convertToChatMessage(output1, "USER");
 
-            // output2 내용 읽기
+            // AI 응답 메시지 (output2)
             Map<String, Object> output2 = (Map<String, Object>) data.get("output2");
-            System.out.println("Output2: " + output2);
+            ChatMessage aiMessage = convertToChatMessage(output2, "AI");
 
-            // 필요한 로직 수행 (DB 저장, 파일 저장 등)
-            // saveToDatabase(output1, output2);
+            // DynamoDB 저장
+            chatMessageService.saveMessage(userMessage);
+            chatMessageService.saveMessage(aiMessage);
 
-            return ResponseEntity.ok("JSON files received and processed successfully.");
+            // WebSocket으로 브로드캐스트
+            messagingTemplate.convertAndSend("/topic/messages", userMessage);
+            messagingTemplate.convertAndSend("/topic/messages", aiMessage);
+
+            return ResponseEntity.ok("Messages saved and broadcasted successfully.");
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.badRequest().body("Error processing JSON files.");
         }
+    }
+
+    private ChatMessage convertToChatMessage(Map<String, Object> data, String sender) {
+        ChatMessage message = new ChatMessage();
+        message.setChatNo((int) (System.currentTimeMillis() / 1000L)); // 고유 번호
+        message.setContent((String) data.get("CONTENT"));
+        message.setCreatedAt((String) data.get("CREATED_AT"));
+        message.setEmotionStatus((String) data.getOrDefault("EMOTION_STATUS", "Neutral"));
+        message.setSender(sender);
+        message.setRfidId((String) data.getOrDefault("RFID_ID", "Unknown"));
+        message.setType("text"); // 기본 메시지 유형
+        message.setReadStatus("N"); // 기본값: 읽지 않은 상태
+        return message;
     }
 }

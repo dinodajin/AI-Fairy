@@ -37,14 +37,20 @@ public class ChatMessageService {
     }
 
     public void saveMessage(ChatMessage message) {
-        if (message.getChatNo() == 0) {
-            message.setChatNo((int) (System.currentTimeMillis() / 1000L)); // 기본값 생성
+        if (message.getReadStatus() == null) {
+            message.setReadStatus("N"); // 기본값: 읽지 않은 상태
         }
-
-//        logger.debug("Saving message with CHAT_NO: {}", message.getChatNo());
 
         DynamoDbTable<ChatMessage> table = dynamoDbEnhancedClient.table("CHAT_TB", TableSchema.fromBean(ChatMessage.class));
         table.putItem(message);
+    }
+
+    // 사용자별 메시지 조회
+    public List<ChatMessage> getMessagesByUserId(String userId) {
+        DynamoDbTable<ChatMessage> table = dynamoDbEnhancedClient.table("CHAT_TB", TableSchema.fromBean(ChatMessage.class));
+        return table.scan().items().stream()
+                .filter(message -> userId.equals(message.getUserId()))
+                .collect(Collectors.toList());
     }
 
     public int getTodaysMessageCount(String userId, String rfidId, String sender, String today) {
