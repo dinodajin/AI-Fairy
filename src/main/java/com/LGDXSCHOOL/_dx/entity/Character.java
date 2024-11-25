@@ -5,7 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "USER_FIGURE_TB")
+@Table(name = "USER_CHARACTER_TB")
 @Getter @Setter
 public class Character {
     @Id
@@ -21,13 +21,13 @@ public class Character {
     @Column(name = "SNACK_COUNT", nullable = false)
     private int snackCount;
 
-    @Column(name = "FIGURE_TYPE", nullable = false)
-    private int figureType;
+    @Column(name = "CHARACTER_TYPE", nullable = false)
+    private int characterType;
 
-    @Column(name = "FIGURE_NAME", nullable = false)
-    private String figureName;
+    @Column(name = "CHARACTER_NAME", nullable = false)
+    private String characterName;
 
-    @Column(name = "FIGURE_LEVEL", nullable = false)
-    private int figureLevel;
+    @Column(name = "CHARACTER_LEVEL", nullable = false)
+    private int characterLevel;
 }
 

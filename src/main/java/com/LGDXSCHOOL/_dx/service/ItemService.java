@@ -30,11 +30,11 @@ public class ItemService {
             throw new IllegalArgumentException("User or RFID not found.");
         }
 
-        int figureType = character.getFigureType(); // 캐릭터 타입
-        int figureLevel = character.getFigureLevel(); // 캐릭터 레벨
+        int characterType = character.getCharacterType(); // 캐릭터 타입
+        int characterLevel = character.getCharacterLevel(); // 캐릭터 레벨
 
         // 2. 아이템 테이블에서 타입과 레벨에 맞는 아이템 검색
-        List<Item> items = itemRepository.findItemsByFigureTypeAndLevel(figureType, figureLevel);
+        List<Item> items = itemRepository.findItemsBycharacterTypeAndLevel(characterType, characterLevel);
 
         // 3. itemIndex 기반으로 한 번에 하나의 아이템만 응답
         if (itemIndex != null && itemIndex >= 0 && itemIndex < items.size()) {

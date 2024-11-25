@@ -13,9 +13,9 @@ import java.util.List;
 @Repository
 public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    @Query("SELECT i FROM Item i WHERE i.figureType = :figureType AND i.figureLevel <= :figureLevel")
-    List<Item> findItemsByFigureTypeAndLevel(@Param("figureType") int figureType,
-                                             @Param("figureLevel") int figureLevel);
+    @Query("SELECT i FROM Item i WHERE i.characterType = :characterType AND i.characterLevel <= :characterLevel")
+    List<Item> findItemsBycharacterTypeAndLevel(@Param("characterType") int characterType,
+                                             @Param("characterLevel") int characterLevel);
 }
 
 

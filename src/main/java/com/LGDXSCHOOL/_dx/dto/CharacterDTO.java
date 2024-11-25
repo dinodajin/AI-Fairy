@@ -17,14 +17,14 @@ public class CharacterDTO {
     @JsonProperty("SNACK_COUNT")
     private int snackCount;
 
-    @JsonProperty("FIGURE_TYPE")
-    private int figureType;
+    @JsonProperty("CHARACTER_TYPE")
+    private int characterType;
 
-    @JsonProperty("FIGURE_NAME")
-    private String figureName;
+    @JsonProperty("CHARACTER_NAME")
+    private String characterName;
 
-    @JsonProperty("FIGURE_LEVEL")
-    private int figureLevel;
+    @JsonProperty("CHARACTER_LEVEL")
+    private int characterLevel;
 
     public String getRfidId() {
         return rfidId;
@@ -58,27 +58,27 @@ public class CharacterDTO {
         this.snackCount = snackCount;
     }
 
-    public int getFigureType() {
-        return figureType;
+    public int getCharacterType() {
+        return characterType;
     }
 
-    public void setFigureType(int figureType) {
-        this.figureType = figureType;
+    public void setCharacterType(int characterType) {
+        this.characterType = characterType;
     }
 
-    public String getFigureName() {
-        return figureName;
+    public String getCharacterName() {
+        return characterName;
     }
 
-    public void setFigureName(String figureName) {
-        this.figureName = figureName;
+    public void setCharacterName(String characterName) {
+        this.characterName = characterName;
     }
 
-    public int getFigureLevel() {
-        return figureLevel;
+    public int getCharacterLevel() {
+        return characterLevel;
     }
 
-    public void setFigureLevel(int figureLevel) {
-        this.figureLevel = figureLevel;
+    public void setCharacterLevel(int characterLevel) {
+        this.characterLevel = characterLevel;
     }
 }

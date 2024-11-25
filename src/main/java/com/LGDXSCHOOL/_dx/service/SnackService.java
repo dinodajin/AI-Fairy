@@ -42,7 +42,7 @@ public class SnackService {
             characterRepository.save(character);
 
             return "Snack count incremented successfully! Current Snack Count" + character.getSnackCount() + ", Current Gauge: " + character.getGauge() +
-                    ", Current Figure Level: " + character.getFigureLevel();
+                    ", Current character Level: " + character.getCharacterLevel();
         }
         return "Chat count not sufficient to increment snack count. Current chats today: " + totalChatsToday;
     }
@@ -61,12 +61,12 @@ public class SnackService {
 
             if (character.getGauge() >= 7) {
                 character.setGauge(0);
-                character.setFigureLevel(character.getFigureLevel() + 1);
+                character.setCharacterLevel(character.getCharacterLevel() + 1);
             }
 
             characterRepository.save(character);
             return "Snack given successfully! Current Snack Count" + character.getSnackCount() + ", Current Gauge: " + character.getGauge() +
-                    ", Current Figure Level: " + character.getFigureLevel();
+                    ", Current character Level: " + character.getCharacterLevel();
         } else {
             return "No snacks available!";
         }
