@@ -5,6 +5,8 @@ import com.LGDXSCHOOL._dx.service.ChatMessageService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDateTime;
 import java.util.Map;
 import org.springframework.web.client.RestTemplate;
 import org.slf4j.Logger;
@@ -34,12 +36,16 @@ public class ChatMessageController {
         try {
             // chatNo 생성 후 DynamoDB 저장
             message.setChatNo((int) (System.currentTimeMillis() / 1000L));
+            message.setCreatedAt(LocalDateTime.now().toString());
+            message.setType("text"); // 기본 메시지 유형 설정
+            message.setUserId("user123@example.com"); // 수정: 임시로 userId 설정 -> 로그인 정보에서 가져와야 함
             chatMessageService.saveMessage(message);
 
             // 라즈베리파이로 chatNo와 content만 전송
             Map<String, Object> payload = Map.of(
                     "chatNo", message.getChatNo(),
-                    "content", message.getContent()
+                    "content", message.getContent(),
+                    "createdAt", message.getCreatedAt()
             );
 
             ResponseEntity<String> response = restTemplate.postForEntity(
