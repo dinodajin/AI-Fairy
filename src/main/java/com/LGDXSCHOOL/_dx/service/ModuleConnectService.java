@@ -69,4 +69,30 @@ public class ModuleConnectService {
 
         return details;
     }
+
+    // 이전 또는 다음 RFID 조회
+    public String getAdjacentRfid(String userId, String currentRfid, String direction) {
+        // 유저가 가진 RFID 목록 조회
+        List<String> rfids = moduleConnectRepository.findRfidsByUserId(userId);
+
+        // 현재 RFID의 인덱스 찾기
+        int currentIndex = rfids.indexOf(currentRfid);
+
+        if (currentIndex == -1) {
+            throw new RuntimeException("Current RFID not found in user RFIDs.");
+        }
+
+        // 이전 또는 다음 RFID 결정
+        int adjacentIndex = "previous".equals(direction)
+                ? currentIndex - 1
+                : currentIndex + 1;
+
+        // 경계값 처리
+        if (adjacentIndex < 0 || adjacentIndex >= rfids.size()) {
+            throw new RuntimeException("No adjacent RFID in the specified direction.");
+        }
+
+        return rfids.get(adjacentIndex);
+    }
+
 }

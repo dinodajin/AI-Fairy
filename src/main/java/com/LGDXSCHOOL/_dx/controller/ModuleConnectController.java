@@ -88,4 +88,21 @@ public class ModuleConnectController {
             ));
         }
     }
+
+    // 이전 또는 다음  RFID 조회 API
+    @GetMapping("/adjacent-rfid")
+    public ResponseEntity<Map<String, String>> getAdjacentRfid(
+            @RequestParam String userId,
+            @RequestParam String currentRfid,
+            @RequestParam String direction) {
+        try {
+            String adjacentRfid = moduleConnectService.getAdjacentRfid(userId, currentRfid, direction);
+
+            Map<String, String> response = Map.of("adjacentRfid", adjacentRfid);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            return ResponseEntity.status(404).body(Map.of("error", e.getMessage()));
+        }
+    }
+
 }

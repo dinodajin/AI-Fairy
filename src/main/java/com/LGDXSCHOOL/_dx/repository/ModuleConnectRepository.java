@@ -19,7 +19,7 @@ public interface ModuleConnectRepository extends JpaRepository<ModuleConnect, Lo
     Optional<ModuleConnect> findByRfidId(String rfidId);
 
     // 유저 ID를 기준으로 RFID 목록 조회
-    @Query("SELECT m.rfidId FROM ModuleConnect m WHERE m.moduleId = :userId")
+    @Query("SELECT m.rfidId FROM ModuleConnect m WHERE m.moduleId = :userId  ORDER BY m.createdAt ASC")
     List<String> findRfidsByUserId(String userId);
 
     @Modifying
