@@ -1,6 +1,7 @@
 package com.LGDXSCHOOL._dx.controller;
 
 import com.LGDXSCHOOL._dx.entity.ModuleConnect;
+import com.LGDXSCHOOL._dx.service.CharacterService;
 import com.LGDXSCHOOL._dx.service.ModuleConnectService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,35 +11,15 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/module")
+@RequestMapping("/api/character")
 public class ModuleConnectController {
 
+    private final CharacterService characterService;
     private final ModuleConnectService moduleConnectService;
 
-    public ModuleConnectController(ModuleConnectService moduleConnectService) {
+    public ModuleConnectController(CharacterService characterService, ModuleConnectService moduleConnectService) {
+        this.characterService = characterService;
         this.moduleConnectService = moduleConnectService;
-    }
-
-    // 로그인한 유저가 가진 모든 RFID 조회
-    @GetMapping("/user-rfids")
-    public ResponseEntity<List<String>> getUserRfids(@RequestParam String userId) {
-        try {
-            List<String> rfids = moduleConnectService.getRfidsByUserId(userId);
-            return ResponseEntity.ok(rfids);
-        } catch (Exception e) {
-            return ResponseEntity.status(404).body(null);
-        }
-    }
-
-    // 특정 RFID 상세 정보 조회
-    @GetMapping("/rfid-detail")
-    public ResponseEntity<Map<String, String>> getRfidDetails(@RequestParam String rfidId) {
-        try {
-            Map<String, String> rfidDetails = moduleConnectService.getRfidDetails(rfidId);
-            return ResponseEntity.ok(rfidDetails);
-        } catch (Exception e) {
-            return ResponseEntity.status(404).body(Map.of("error", "RFID not found: " + rfidId));
-        }
     }
 
     // 라즈베리파이에서 RFID 받아오는  API
@@ -89,20 +70,17 @@ public class ModuleConnectController {
         }
     }
 
-    // 이전 또는 다음  RFID 조회 API
+    // 이전 또는 다음 RFID 조회
     @GetMapping("/adjacent-rfid")
-    public ResponseEntity<Map<String, String>> getAdjacentRfid(
+    public ResponseEntity<String> getAdjacentRfid(
             @RequestParam String userId,
             @RequestParam String currentRfid,
             @RequestParam String direction) {
         try {
             String adjacentRfid = moduleConnectService.getAdjacentRfid(userId, currentRfid, direction);
-
-            Map<String, String> response = Map.of("adjacentRfid", adjacentRfid);
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok(adjacentRfid);
         } catch (Exception e) {
-            return ResponseEntity.status(404).body(Map.of("error", e.getMessage()));
+            return ResponseEntity.status(404).body("Error: " + e.getMessage());
         }
     }
-
 }

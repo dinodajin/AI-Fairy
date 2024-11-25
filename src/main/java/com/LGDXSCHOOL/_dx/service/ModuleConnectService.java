@@ -56,20 +56,6 @@ public class ModuleConnectService {
         return moduleConnectRepository.findRfidsByUserId(userId);
     }
 
-    // RFID 상세 정보 조회
-    public Map<String, String> getRfidDetails(String rfidId) {
-        ModuleConnect moduleConnect = moduleConnectRepository.findByRfidId(rfidId)
-                .orElseThrow(() -> new RuntimeException("RFID not found: " + rfidId));
-
-        Map<String, String> details = new HashMap<>();
-        details.put("moduleId", moduleConnect.getModuleId());
-        details.put("rfidId", moduleConnect.getRfidId());
-        details.put("connectOnOff", moduleConnect.getConnectOnOff());
-        details.put("updatedAt", moduleConnect.getUpdatedAt().toString());
-
-        return details;
-    }
-
     // 이전 또는 다음 RFID 조회
     public String getAdjacentRfid(String userId, String currentRfid, String direction) {
         // 유저가 가진 RFID 목록 조회
