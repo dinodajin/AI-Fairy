@@ -7,8 +7,12 @@ import software.amazon.awssdk.enhanced.dynamodb.DynamoDbTable;
 import software.amazon.awssdk.enhanced.dynamodb.TableSchema;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.ListTablesResponse;
+import software.amazon.awssdk.enhanced.dynamodb.model.ScanEnhancedRequest;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.enhanced.dynamodb.Expression;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -118,5 +122,27 @@ public class ChatMessageService {
         } else {
             return "No unread messages found for userId: " + userId + ", rfidId: " + rfidId;
         }
+    }
+
+    // 키워드로 메시지 검색
+    public List<ChatMessage> searchMessagesByKeyword(String keyword) {
+        DynamoDbTable<ChatMessage> table = dynamoDbEnhancedClient.table("CHAT_TB", TableSchema.fromBean(ChatMessage.class));
+
+        // Expression 생성
+        Expression filterExpression = Expression.builder()
+                .expression("contains(CONTENT, :keyword)")
+                .expressionValues(Map.of(":keyword", AttributeValue.builder().s(keyword).build()))
+                .build();
+
+        // Scan 요청 생성
+        ScanEnhancedRequest request = ScanEnhancedRequest.builder()
+                .filterExpression(filterExpression)
+                .build();
+
+        // 검색 실행
+        return table.scan(request)
+                .items()
+                .stream()
+                .collect(Collectors.toList());
     }
 }

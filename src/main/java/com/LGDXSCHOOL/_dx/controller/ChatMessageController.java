@@ -127,6 +127,22 @@ public class ChatMessageController {
         return chatMessageService.markAllUnreadMessagesAsRead(userId, rfidId);
     }
 
+    // 검색 기능 추가
+    @GetMapping("/search")
+    public ResponseEntity<List<ChatMessage>> searchMessages(@RequestParam String keyword) {
+        try {
+            List<ChatMessage> searchResults = chatMessageService.searchMessagesByKeyword(keyword);
+            if (searchResults.isEmpty()) {
+                return ResponseEntity.noContent().build(); // 검색 결과가 없을 때
+            }
+            return ResponseEntity.ok(searchResults);
+        } catch (Exception e) {
+            logger.error("Error while searching messages with keyword: {}", keyword, e);
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
+
     // JSON 데이터를 ChatMessage로 변환
     private ChatMessage convertToChatMessage(Map<String, Object> data, String sender) {
         ChatMessage message = new ChatMessage();
