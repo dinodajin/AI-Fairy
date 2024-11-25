@@ -36,6 +36,7 @@ public class ChatMessageService {
         return table.scan().items().stream().collect(Collectors.toList());
     }
 
+    // 라즈베리파이로부터 받은 json 채팅 정보 저장
     public void saveMessage(ChatMessage message) {
         if (message.getReadStatus() == null) {
             message.setReadStatus("N"); // 기본값: 읽지 않은 상태
@@ -43,6 +44,27 @@ public class ChatMessageService {
 
         DynamoDbTable<ChatMessage> table = dynamoDbEnhancedClient.table("CHAT_TB", TableSchema.fromBean(ChatMessage.class));
         table.putItem(message);
+    }
+
+    // 기존 db에 라즈베리로부터 받은 output1의 chatno의 존재 여부 확인
+    public boolean existsByChatNo(int chatNo) {
+        DynamoDbTable<ChatMessage> table = dynamoDbEnhancedClient.table("CHAT_TB", TableSchema.fromBean(ChatMessage.class));
+        ChatMessage message = table.getItem(r -> r.key(k -> k.partitionValue(chatNo)));
+        return message != null;
+    }
+
+
+    // 내가 채팅창에서 작성한 text 중 emotionStatus 정보 업데이트
+    public void updateEmotionStatus(int chatNo, String emotionStatus) {
+        DynamoDbTable<ChatMessage> table = dynamoDbEnhancedClient.table("CHAT_TB", TableSchema.fromBean(ChatMessage.class));
+
+        ChatMessage existingMessage = table.getItem(r -> r.key(k -> k.partitionValue(chatNo)));
+        if (existingMessage != null) {
+            existingMessage.setEmotionStatus(emotionStatus);
+            table.putItem(existingMessage);
+        } else {
+            throw new RuntimeException("Message with chatNo " + chatNo + " not found.");
+        }
     }
 
     // 사용자별 메시지 조회
