@@ -1,8 +1,6 @@
 package com.LGDXSCHOOL._dx.service;
 
-import com.LGDXSCHOOL._dx.dto.CharacterDTO;
 import com.LGDXSCHOOL._dx.entity.Character;
-import com.LGDXSCHOOL._dx.entity.ModuleConnect;
 import com.LGDXSCHOOL._dx.repository.CharacterRepository;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +20,7 @@ public class CharacterService {
         this.moduleConnectService = moduleConnectService;
     }
 
-    // 유저의 모든 RFID와 관련된 상세 정보 + 모듈 연결 상태 조회
+    // 유저의 모든 RFID와 캐릭터 정보 + 모듈 연결 상태 조회
     public List<Map<String, Object>> getRfidsWithDetails(String userId) {
         List<Character> characters = characterRepository.findAll()
                 .stream()
@@ -38,7 +36,6 @@ public class CharacterService {
             details.put("characterName", character.getCharacterName());
             details.put("characterLevel", character.getCharacterLevel());
 
-            // 모듈 연결 상태 추가
             String connectStatus = moduleConnectService.getConnectStatusByRfid(character.getRfidId());
             details.put("connectStatus", connectStatus);
 
@@ -61,7 +58,6 @@ public class CharacterService {
         details.put("characterName", character.getCharacterName());
         details.put("characterLevel", character.getCharacterLevel());
 
-        // 모듈 연결 상태 추가
         String connectStatus = moduleConnectService.getConnectStatusByRfid(rfidId);
         details.put("connectStatus", connectStatus);
 
