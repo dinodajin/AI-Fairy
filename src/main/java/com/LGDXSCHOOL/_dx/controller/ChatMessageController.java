@@ -43,7 +43,7 @@ public class ChatMessageController {
             );
 
             ResponseEntity<String> response = restTemplate.postForEntity(
-                    "http://<RASPBERRY_PI_IP>:<PORT>/processMessage",
+                    "http://192.168.0.120:5000/processMessage",
                     payload,
                     String.class
             );
