@@ -12,6 +12,7 @@ import org.springframework.web.client.RestTemplate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 
 @RestController
@@ -19,6 +20,7 @@ import java.util.List;
 public class ChatMessageController {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatMessageController.class);
+    private static final AtomicInteger chatNoGenerator = new AtomicInteger(1);
 
     private final ChatMessageService chatMessageService;
     private final SimpMessagingTemplate messagingTemplate;
@@ -35,7 +37,7 @@ public class ChatMessageController {
     public ResponseEntity<String> sendMessageToRaspberryPi(@RequestBody ChatMessage message) {
         try {
             // chatNo 생성 후 DynamoDB 저장
-            message.setChatNo((int) (System.currentTimeMillis() / 1000L));
+            message.setChatNo(chatNoGenerator.getAndIncrement());
             message.setCreatedAt(LocalDateTime.now().toString());
             message.setType("text"); // 기본 메시지 유형 설정
             message.setUserId("user123@example.com"); // 수정: 임시로 userId 설정 -> 로그인 정보에서 가져와야 함
@@ -66,48 +68,63 @@ public class ChatMessageController {
     @PostMapping("/receive")
     public ResponseEntity<String> receiveJsonFromRaspberryPi(@RequestBody Map<String, Object> data) {
         try {
-            // 사용자 메시지 (output1)
-            Map<String, Object> output1 = (Map<String, Object>) data.get("output1");
+            // 1. output1 처리
+            if (data.containsKey("output1")) {
+                Map<String, Object> output1 = (Map<String, Object>) data.get("output1");
 
-            if (output1.containsKey("CHAT_NO")) {
-                // chatNo가 있는 경우
-                int chatNo = (int) output1.get("CHAT_NO");
-                String emotionStatus = (String) output1.get("EMOTION_STATUS");
-
-                // output1의 emotionStatus만 업데이트
-                chatMessageService.updateEmotionStatus(chatNo, emotionStatus);
-                logger.info("Updated emotionStatus for chatNo {}: {}", chatNo, emotionStatus);
-
-                // AI 응답 메시지 (output2) 처리
-                Map<String, Object> output2 = (Map<String, Object>) data.get("output2");
-                ChatMessage aiMessage = convertToChatMessage(output2, "AI");
-                chatMessageService.saveMessage(aiMessage);
-
-                // WebSocket 브로드캐스트
-                messagingTemplate.convertAndSend("/topic/messages", aiMessage);
-                logger.info("Saved and broadcasted AI message: {}", aiMessage);
-
-            } else {
-                // chatNo가 없는 경우 -> 새로운 메시지 저장
-                ChatMessage userMessage = convertToChatMessage(output1, "USER");
-                chatMessageService.saveMessage(userMessage);
-
-                Map<String, Object> output2 = (Map<String, Object>) data.get("output2");
-                ChatMessage aiMessage = convertToChatMessage(output2, "AI");
-                chatMessageService.saveMessage(aiMessage);
-
-                // WebSocket 브로드캐스트
-                messagingTemplate.convertAndSend("/topic/messages", userMessage);
-                messagingTemplate.convertAndSend("/topic/messages", aiMessage);
-                logger.info("Saved and broadcasted new messages: {} and {}", userMessage, aiMessage);
+                // CHAT_NO 여부에 따라 분기 처리
+                if (output1.containsKey("CHAT_NO")) {
+                    // CASE 1: CHAT_NO가 있는 경우
+                    processOutput1WithChatNo(output1);
+                } else {
+                    // CASE 2: CHAT_NO가 없는 경우
+                    processOutput1WithoutChatNo(output1);
+                }
             }
 
-            return ResponseEntity.ok("Messages processed successfully.");
+            // 2. output2 처리
+            if (data.containsKey("output2")) {
+                Map<String, Object> output2 = (Map<String, Object>) data.get("output2");
+                processOutput2(output2);
+            }
+
+            return ResponseEntity.ok("Messages processed sequentially.");
         } catch (Exception e) {
             logger.error("Error processing JSON data from Raspberry Pi", e);
             return ResponseEntity.badRequest().body("Error processing JSON data: " + e.getMessage());
         }
     }
+
+    // output1 처리 (CHAT_NO가 있는 경우)
+    private void processOutput1WithChatNo(Map<String, Object> output1) {
+        int chatNo = (int) output1.get("CHAT_NO");
+        String emotionStatus = (String) output1.get("EMOTION_STATUS");
+
+        // emotionStatus 업데이트
+        chatMessageService.updateEmotionStatus(chatNo, emotionStatus);
+        logger.info("Processed output1 (CHAT_NO exists): Updated emotionStatus for chatNo {}: {}", chatNo, emotionStatus);
+    }
+
+    // output1 처리 (CHAT_NO가 없는 경우)
+    private void processOutput1WithoutChatNo(Map<String, Object> output1) {
+        ChatMessage userMessage = convertToChatMessage(output1, "USER");
+        chatMessageService.saveMessage(userMessage);
+
+        // WebSocket 브로드캐스트
+        messagingTemplate.convertAndSend("/topic/messages", userMessage);
+        logger.info("Processed output1 (CHAT_NO missing): Saved and broadcasted user message: {}", userMessage);
+    }
+
+    // output2 처리
+    private void processOutput2(Map<String, Object> output2) {
+        ChatMessage aiMessage = convertToChatMessage(output2, "AI");
+        chatMessageService.saveMessage(aiMessage);
+
+        // WebSocket 브로드캐스트
+        messagingTemplate.convertAndSend("/topic/messages", aiMessage);
+        logger.info("Processed output2: Saved and broadcasted AI message: {}", aiMessage);
+    }
+
 
     // 모든 메시지 조회
     @GetMapping("/messages")
@@ -152,7 +169,7 @@ public class ChatMessageController {
     // JSON 데이터를 ChatMessage로 변환
     private ChatMessage convertToChatMessage(Map<String, Object> data, String sender) {
         ChatMessage message = new ChatMessage();
-        message.setChatNo(data.containsKey("CHAT_NO") ? (int) data.get("CHAT_NO") : (int) (System.currentTimeMillis() / 1000L));
+        message.setChatNo(data.containsKey("CHAT_NO") ? (int) data.get("CHAT_NO") : chatNoGenerator.getAndIncrement());
         message.setContent((String) data.get("CONTENT"));
         message.setCreatedAt((String) data.get("CREATED_AT"));
         message.setEmotionStatus((String) data.getOrDefault("EMOTION_STATUS", "Neutral"));
