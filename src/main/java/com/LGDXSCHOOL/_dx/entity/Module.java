@@ -10,9 +10,9 @@ import lombok.Setter;
 @Getter @Setter
 public class Module {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MODULE_ID")
-    private Long moduleId;
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "MODULE_ID", nullable = false)
+    private String moduleId;
 
     @Column(name = "USER_ID", nullable = false)
     private String userId;

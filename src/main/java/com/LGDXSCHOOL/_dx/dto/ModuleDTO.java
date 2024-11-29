@@ -9,7 +9,7 @@ import lombok.Data;
 public class ModuleDTO {
     @NotNull
     @JsonProperty("MODULE_ID")
-    private Long moduleId;
+    private String moduleId;
 
     @JsonProperty("USER_ID")
     private String userId;
@@ -25,11 +25,11 @@ public class ModuleDTO {
         this.userId = userId;
     }
 
-    public Long getModuleId() {
+    public String getModuleId() {
         return moduleId;
     }
 
-    public void setModuleId(Long moduleId) {
+    public void setModuleId(String moduleId) {
         this.moduleId = moduleId;
     }
 

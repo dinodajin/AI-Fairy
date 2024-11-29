@@ -1,5 +1,6 @@
 package com.LGDXSCHOOL._dx.service;
 
+import com.LGDXSCHOOL._dx.dto.ModuleDTO;
 import com.LGDXSCHOOL._dx.repository.ModuleRepository;
 import com.LGDXSCHOOL._dx.entity.Module;
 import org.springframework.stereotype.Service;
@@ -21,4 +22,13 @@ public class ModuleService {
         // 데이터가 비어 있지 않으면 true 반환
         return !modules.isEmpty();
     }
+
+    public void saveModule(ModuleDTO moduleDTO) {
+        Module module = new Module();
+        module.setModuleId(moduleDTO.getModuleId());
+        module.setUserId(moduleDTO.getUserId());
+        module.setType(moduleDTO.getType());
+        moduleRepository.save(module);
+    }
+
 }
