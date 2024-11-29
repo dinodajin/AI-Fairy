@@ -28,8 +28,12 @@ public class UserService {
 
     private static final String EMAIL_REGEX = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$";
 
-    private boolean isValidEmail(String email) {
-        return Pattern.matches(EMAIL_REGEX, email);
+    private boolean isValidEmail(String userId) {
+        return Pattern.matches(EMAIL_REGEX, userId);
+    }
+
+    public boolean isEmailTaken(String userId) {
+        return userRepository.findByUserId(userId).isPresent();
     }
 
     public UserDTO saveUser(UserDTO userDTO) {
@@ -38,10 +42,9 @@ public class UserService {
             throw new IllegalArgumentException("USER_ID는 유효한 이메일 형식이어야 합니다.");
         }
 
-        // 중복 체크
-        Optional<User> existingUser = userRepository.findByUserId(userDTO.getUserId());
-        if (existingUser.isPresent()) {
-            throw new IllegalArgumentException("이미 존재하는 USER_ID입니다.");
+        // 이메일 중복 확인
+        if (isEmailTaken(userDTO.getUserId())) {
+            throw new IllegalArgumentException("이미 존재하는 이메일 입니다.");
         }
 
         // 비밀번호 암호화
@@ -56,6 +59,7 @@ public class UserService {
         BeanUtils.copyProperties(savedUser, userDTO); // Entity -> DTO 자동 변환
         return userDTO;
     }
+
     // 로그인 로직
     public String login(String userId, String userPw) {
         log.info("Authenticating userId: {}", userId);
@@ -69,5 +73,4 @@ public class UserService {
         log.info("Token created for userId: {}", userId);
         return token;
     }
-
 }

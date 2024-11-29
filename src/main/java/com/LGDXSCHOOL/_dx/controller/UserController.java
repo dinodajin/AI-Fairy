@@ -22,6 +22,28 @@ public class UserController {
         this.userService = userService;
     }
 
+    // 회원가입시 이메일 중복 확인
+    @GetMapping("/check/{userId}")
+    public ResponseEntity<?> checkEmail(@PathVariable String userId) {
+        if (userId == null || userId.isEmpty()) {
+            return ResponseEntity.badRequest().body("USER_ID is required.");
+        }
+
+        // 이메일 형식 검증
+        if (!userId.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$")) {
+            return ResponseEntity.badRequest().body("유효하지 않은 이메일 형식입니다.");
+        }
+
+        // 이메일 중복 확인
+        boolean isEmailTaken = userService.isEmailTaken(userId);
+        if (isEmailTaken) {
+            return ResponseEntity.badRequest().body("이미 등록된 이메일입니다.");
+        } else {
+            return ResponseEntity.ok("사용 가능한 이메일입니다.");
+        }
+    }
+
+    // 회원가입
     @PostMapping
     public ResponseEntity<UserDTO> saveUser(@RequestBody UserDTO userDTO) {
         if (userDTO.getUserId() == null || userDTO.getUserId().isEmpty()) {
