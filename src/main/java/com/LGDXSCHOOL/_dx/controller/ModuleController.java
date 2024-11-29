@@ -39,4 +39,15 @@ public class ModuleController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("모듈 등록 실패: " + e.getMessage());
         }
     }
+
+    @GetMapping("/last-id")
+    public ResponseEntity<String> getLastModuleId() {
+        try {
+            String lastId = moduleService.getLastModuleId();
+            return ResponseEntity.ok(lastId);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error retrieving last MODULE_ID: " + e.getMessage());
+        }
+    }
 }

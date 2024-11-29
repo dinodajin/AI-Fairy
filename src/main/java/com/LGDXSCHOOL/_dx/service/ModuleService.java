@@ -31,4 +31,8 @@ public class ModuleService {
         moduleRepository.save(module);
     }
 
+    public String getLastModuleId() {
+        String lastId = moduleRepository.findLastModuleId();
+        return lastId != null ? lastId : "M_000"; // 기본값 반환
+    }
 }
