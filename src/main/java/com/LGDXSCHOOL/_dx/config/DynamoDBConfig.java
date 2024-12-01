@@ -8,6 +8,7 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedClient;
 import software.amazon.awssdk.regions.Region;
+import java.net.URI;
 
 @Configuration
 public class DynamoDBConfig {
@@ -26,6 +27,7 @@ public class DynamoDBConfig {
                 .credentialsProvider(StaticCredentialsProvider.create(
                         AwsBasicCredentials.create(awsAccessKey, awsSecretKey)
                 ))
+                .endpointOverride(URI.create("https://dynamodb.ap-northeast-2.amazonaws.com")) // 엔드포인트 설정
                 .build();
     }
 
