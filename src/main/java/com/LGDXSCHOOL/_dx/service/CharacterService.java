@@ -1,12 +1,15 @@
 package com.LGDXSCHOOL._dx.service;
 
 import com.LGDXSCHOOL._dx.entity.Character;
+import com.LGDXSCHOOL._dx.entity.ModuleConnect;
 import com.LGDXSCHOOL._dx.repository.CharacterRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,7 +39,7 @@ public class CharacterService {
             details.put("characterName", character.getCharacterName());
             details.put("characterLevel", character.getCharacterLevel());
 
-            String connectStatus = moduleConnectService.getConnectStatusByRfid(character.getRfidId());
+            Boolean connectStatus = moduleConnectService.getConnectStatusByRfid(character.getRfidId());
             details.put("connectStatus", connectStatus);
 
             return details;
@@ -58,9 +61,23 @@ public class CharacterService {
         details.put("characterName", character.getCharacterName());
         details.put("characterLevel", character.getCharacterLevel());
 
-        String connectStatus = moduleConnectService.getConnectStatusByRfid(rfidId);
+        Boolean connectStatus = moduleConnectService.getConnectStatusByRfid(rfidId);
         details.put("connectStatus", connectStatus);
 
         return details;
     }
+
+    public void ensureCharacterForRfid(ModuleConnect moduleConnect) {
+        // Step 1: RFID에 해당하는 캐릭터 정보 확인
+        Optional<Character> existingCharacter = characterRepository.findByRfidId(moduleConnect.getRfidId());
+
+        if (existingCharacter.isEmpty()) {
+            // Step 2: 캐릭터 정보가 없으면 새로 생성
+            Character newCharacter = new Character();
+            newCharacter.setRfidId(moduleConnect.getRfidId());
+            newCharacter.setCharacterName("Default Character"); // 기본 이름 설정
+            characterRepository.save(newCharacter);
+        }
+    }
+
 }
