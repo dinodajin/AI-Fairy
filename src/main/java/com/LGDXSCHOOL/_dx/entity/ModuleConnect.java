@@ -15,23 +15,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 public class ModuleConnect {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long no;
-
-    @Column(name = "MODULE_ID")
-    private String moduleId;
-
     @Column(name = "RFID_ID")
     private String rfidId;
 
-    @CreatedDate
-    @Column(name = "CREATED_AT", updatable = false)
-    private LocalDateTime createdAt;
+    @Column(name = "MODULE_ID")
+    private String moduleId;
 
     @LastModifiedDate
     @Column(name = "UPDATED_AT")
     private LocalDateTime updatedAt;
 
-    @Column(name = "CONNECT_ONOFF")
-    private Boolean connectOnOff;
 }

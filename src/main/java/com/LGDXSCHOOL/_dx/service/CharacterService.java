@@ -35,10 +35,6 @@ public class CharacterService {
             details.put("characterType", character.getCharacterType());
             details.put("characterName", character.getCharacterName());
             details.put("characterLevel", character.getCharacterLevel());
-
-            Boolean connectStatus = moduleConnectService.getConnectStatusByRfid(character.getRfidId());
-            details.put("connectStatus", connectStatus);
-
             return details;
         }).collect(Collectors.toList());
     }
@@ -57,9 +53,6 @@ public class CharacterService {
         details.put("characterType", character.getCharacterType());
         details.put("characterName", character.getCharacterName());
         details.put("characterLevel", character.getCharacterLevel());
-
-        Boolean connectStatus = moduleConnectService.getConnectStatusByRfid(rfidId);
-        details.put("connectStatus", connectStatus);
 
         return details;
     }

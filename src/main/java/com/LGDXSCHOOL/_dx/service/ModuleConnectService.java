@@ -22,20 +22,12 @@ public class ModuleConnectService {
 
         if (moduleConnect.isPresent()) {
             ModuleConnect connect = moduleConnect.get();
-            connect.setConnectOnOff(isConnected);
             connect.setUpdatedAt(LocalDateTime.now());
             moduleConnectRepository.save(connect);
             return isConnected ? "Y" : "N";
         } else {
             throw new RuntimeException("RFID not found: " + rfidId);
         }
-    }
-
-    // RFID 기준 연결 상태 조회
-    public Boolean getConnectStatusByRfid(String rfidId) {
-        return moduleConnectRepository.findByRfidId(rfidId)
-                .map(ModuleConnect::getConnectOnOff)
-                .orElseThrow(() -> new RuntimeException("RFID not found: " + rfidId));
     }
 
     // 모듈 상태 조회

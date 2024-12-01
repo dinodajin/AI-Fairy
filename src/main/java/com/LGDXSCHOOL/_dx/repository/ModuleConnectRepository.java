@@ -11,7 +11,6 @@ import java.util.Optional;
 @Repository
 public interface ModuleConnectRepository extends JpaRepository<ModuleConnect, Long> {
 
-    Optional<ModuleConnect> findByModuleIdAndRfidId(String moduleId, String rfidId);
 
     Optional<ModuleConnect> findByModuleId(String moduleId);
 
@@ -21,8 +20,4 @@ public interface ModuleConnectRepository extends JpaRepository<ModuleConnect, Lo
     // 유저 ID를 기준으로 RFID 목록 조회
     @Query("SELECT m.rfidId FROM ModuleConnect m WHERE m.moduleId = :userId  ORDER BY m.createdAt ASC")
     List<String> findRfidsByUserId(String userId);
-
-    @Modifying
-    @Query("UPDATE ModuleConnect m SET m.connectOnOff = :status, m.updatedAt = CURRENT_TIMESTAMP WHERE m.moduleId = :moduleId")
-    void updateConnectOnOffByModuleId(String moduleId, String status);
 }
