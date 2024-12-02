@@ -9,6 +9,10 @@ import lombok.Setter;
 @Getter @Setter
 public class Character {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "NO", nullable = false)
+    private Long no;
+
     @Column(name = "RFID_ID", nullable = false)
     private String rfidId;
 
