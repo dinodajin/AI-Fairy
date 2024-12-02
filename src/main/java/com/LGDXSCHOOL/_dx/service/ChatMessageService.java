@@ -18,14 +18,14 @@ import java.util.stream.Collectors;
 
 @Service
 public class ChatMessageService {
-    private static final AtomicInteger CHAT_NO_GENERATOR = new AtomicInteger(1); // Auto-increment simulation
-
     private final DynamoDbEnhancedClient dynamoDbEnhancedClient;
     private final DynamoDbClient dynamoDbClient;
+    private final DynamoDbTable<ChatMessage> chatMessageTable;
 
     public ChatMessageService(DynamoDbEnhancedClient dynamoDbEnhancedClient, DynamoDbClient dynamoDbClient) {
         this.dynamoDbEnhancedClient = dynamoDbEnhancedClient;
         this.dynamoDbClient = dynamoDbClient;
+        this.chatMessageTable = dynamoDbEnhancedClient.table("CHAT_TB", TableSchema.fromBean(ChatMessage.class));
     }
 
     // DynamoDB 연동 확인
@@ -39,6 +39,19 @@ public class ChatMessageService {
         DynamoDbTable<ChatMessage> table = dynamoDbEnhancedClient.table("CHAT_TB", TableSchema.fromBean(ChatMessage.class));
         return table.scan().items().stream().collect(Collectors.toList());
     }
+
+    public int getLastChatNo() {
+        try {
+            List<ChatMessage> messages = chatMessageTable.scan().items().stream().toList();
+            return messages.stream()
+                    .mapToInt(ChatMessage::getChatNo)
+                    .max()
+                    .orElse(0); // 기본값 0
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to fetch last chat number", e);
+        }
+    }
+
 
     // 라즈베리파이로부터 받은 json 채팅 정보 저장
     public void saveMessage(ChatMessage message) {

@@ -2,6 +2,7 @@ package com.LGDXSCHOOL._dx.controller;
 
 import com.LGDXSCHOOL._dx.dto.ChatMessage;
 import com.LGDXSCHOOL._dx.service.ChatMessageService;
+import com.LGDXSCHOOL._dx.utils.ApplicationContextProvider;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +21,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class ChatMessageController {
 
     private static final Logger logger = LoggerFactory.getLogger(ChatMessageController.class);
-    private static final AtomicInteger chatNoGenerator = new AtomicInteger(1);
+
+    private static AtomicInteger chatNoGenerator;;
 
     private final ChatMessageService chatMessageService;
     private final SimpMessagingTemplate messagingTemplate;
@@ -30,20 +32,43 @@ public class ChatMessageController {
         this.chatMessageService = chatMessageService;
         this.messagingTemplate = messagingTemplate;
         this.restTemplate = restTemplate;
+
+        // chatNoGenerator 초기화
+        initializeChatNoGenerator();
     }
 
-    // 사용자 메시지 전송 및 DynamoDB 저장
+    private void initializeChatNoGenerator() {
+        try {
+            int lastChatNo = fetchLastChatNoFromDatabase();
+            chatNoGenerator = new AtomicInteger(lastChatNo > 0 ? lastChatNo + 1 : 1);
+            logger.info("ChatNo generator initialized with value: {}", chatNoGenerator.get());
+        } catch (Exception e) {
+            logger.error("Failed to initialize ChatNo generator. Defaulting to 1.", e);
+            chatNoGenerator = new AtomicInteger(1);
+        }
+    }
+
+    private int fetchLastChatNoFromDatabase() {
+        try {
+            return chatMessageService.getLastChatNo(); // ChatMessageService에서 마지막 chatNo 가져오기
+        } catch (Exception e) {
+            logger.error("Error fetching last ChatNo from database", e);
+            return 0; // 기본값
+        }
+    }
+
+    // 사용자 메시지 전송 및 저장
     @PostMapping("/send")
     public ResponseEntity<String> sendMessageToRaspberryPi(@RequestBody ChatMessage message) {
         try {
-            // chatNo 생성 후 DynamoDB 저장
+            // chatNo 생성
             message.setChatNo(chatNoGenerator.getAndIncrement());
             message.setCreatedAt(LocalDateTime.now().toString());
             message.setType("text"); // 기본 메시지 유형 설정
             message.setUserId("user123@example.com"); // 수정: 임시로 userId 설정 -> 로그인 정보에서 가져와야 함
             chatMessageService.saveMessage(message);
 
-            // 라즈베리파이로 chatNo와 content만 전송
+            // 라즈베리파이로 전송
             Map<String, Object> payload = Map.of(
                     "chatNo", message.getChatNo(),
                     "content", message.getContent(),
@@ -51,7 +76,7 @@ public class ChatMessageController {
             );
 
             ResponseEntity<String> response = restTemplate.postForEntity(
-                    "http://192.168.0.120:5000/processMessage",
+                    "http://192.168.0.120:5000/data",
                     payload,
                     String.class
             );
