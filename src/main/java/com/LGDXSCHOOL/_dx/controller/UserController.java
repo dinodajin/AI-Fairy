@@ -6,8 +6,13 @@ import com.LGDXSCHOOL._dx.dto.LoginResponseDTO;
 import com.LGDXSCHOOL._dx.dto.UserDTO;
 import com.LGDXSCHOOL._dx.entity.User;
 import com.LGDXSCHOOL._dx.service.UserService;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -80,6 +85,21 @@ public class UserController {
         } catch (Exception e) {
             // 서버 내부 에러 처리
             return ResponseEntity.status(500).body("서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+        }
+    }
+
+    // 로그아웃
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(HttpServletRequest request) {
+        try {
+            HttpSession session = request.getSession(false);
+            if (session != null) {
+                session.invalidate();
+            }
+            return ResponseEntity.ok("Successfully logged out");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Logout failed: " + e.getMessage());
         }
     }
 }
