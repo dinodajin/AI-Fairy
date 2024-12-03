@@ -65,7 +65,9 @@ public class ChatMessageController {
             message.setChatNo(chatNoGenerator.getAndIncrement());
             message.setCreatedAt(LocalDateTime.now().toString());
             message.setType("text"); // 기본 메시지 유형 설정
-            message.setUserId("user123@example.com"); // 수정: 임시로 userId 설정 -> 로그인 정보에서 가져와야 함
+            String userId = message.getUserId();
+            message.setUserId(userId);
+            message.setRfidId(message.getRfidId());
             chatMessageService.saveMessage(message);
 
             // 라즈베리파이로 전송
@@ -76,7 +78,7 @@ public class ChatMessageController {
             );
 
             ResponseEntity<String> response = restTemplate.postForEntity(
-                    "http://192.168.0.120:5000/data",
+                    "http://192.168.219.213:5000/data",
                     payload,
                     String.class
             );
@@ -157,11 +159,12 @@ public class ChatMessageController {
         return chatMessageService.getAllMessages();
     }
 
-    // 특정 사용자의 메시지 조회
+    // 특정 사용자 & RFID의 메시지 조회
     @GetMapping("/messages/user")
-    public List<ChatMessage> getUserMessages(@RequestParam String userId) {
-        return chatMessageService.getMessagesByUserId(userId);
+    public List<ChatMessage> getUserMessages(@RequestParam String userId, @RequestParam String rfid) {
+        return chatMessageService.getMessagesByUserIdAndRfid(userId, rfid);
     }
+
 
     // 안 읽은 메시지 존재 여부 확인
     @GetMapping("/messages/unread")
@@ -202,6 +205,7 @@ public class ChatMessageController {
         message.setRfidId((String) data.getOrDefault("RFID_ID", "Unknown"));
         message.setType("text");
         message.setReadStatus("N");
+        message.setUserId((String) data.get("USER_ID"));
         return message;
     }
 }

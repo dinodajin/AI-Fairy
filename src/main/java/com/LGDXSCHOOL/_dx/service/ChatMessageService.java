@@ -52,6 +52,17 @@ public class ChatMessageService {
         }
     }
 
+    public List<ChatMessage> getMessagesByUserIdAndRfid(String userId, String rfidId) {
+        try {
+            // DynamoDB 혹은 데이터베이스에서 userId와 rfid 조합으로 필터링
+            return chatMessageTable.scan().items().stream()
+                    .filter(message -> message.getUserId().equals(userId) &&
+                            message.getRfidId().equals(rfidId))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to fetch messages for userId: " + userId + ", rfidId: " + rfidId, e);
+        }
+    }
 
     // 라즈베리파이로부터 받은 json 채팅 정보 저장
     public void saveMessage(ChatMessage message) {
