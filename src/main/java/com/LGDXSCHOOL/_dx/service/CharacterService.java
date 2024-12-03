@@ -52,21 +52,22 @@ public class CharacterService {
         characterRepository.save(character);
     }
 
-    // 특정 RFID로 캐릭터 조회
-    public CharacterDTO getCharacterDetails(String rfidId) {
-        Character character = characterRepository.findByRfidId(rfidId)
-                .orElseThrow(() -> new RuntimeException("Character not found for RFID: " + rfidId));
+    public void updateCharacterDetails(String userId, CharacterDTO characterDTO) {
+        Character character = characterRepository.findByUserIdAndRfidId(userId, characterDTO.getRfidId())
+                .orElseThrow(() -> new RuntimeException("Character not found for userId: " + userId + " and RFID: " + characterDTO.getRfidId()));
 
-        CharacterDTO characterDTO = new CharacterDTO();
-        characterDTO.setNo(character.getNo());
-        characterDTO.setRfidId(character.getRfidId());
-        characterDTO.setUserId(character.getUserId());
-        characterDTO.setCharacterType(character.getCharacterType());
-        characterDTO.setCharacterName(character.getCharacterName());
-        characterDTO.setGauge(character.getGauge());
-        characterDTO.setSnackCount(character.getSnackCount());
-        characterDTO.setCharacterLevel(character.getCharacterLevel());
+        // Update character details
+        character.setGauge(characterDTO.getGauge());
+        character.setSnackCount(characterDTO.getSnackCount());
+        character.setCharacterLevel(characterDTO.getCharacterLevel());
 
-        return characterDTO;
+        // Validation: Gauge should not exceed max value
+        if (character.getGauge() == 7) {
+            character.setGauge(0);
+            character.setCharacterLevel(character.getCharacterLevel() + 1); // 레벨 업
+        }
+
+        characterRepository.save(character);
     }
+
 }
